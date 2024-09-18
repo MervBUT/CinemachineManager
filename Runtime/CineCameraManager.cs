@@ -104,7 +104,7 @@ namespace BUT.Utils.CineCameraManager
 #endif
         }
 
-        public void SwitchTo(int id)
+        public void SwitchTo(int id,Action<int> p_onCameraReached = null)
         {
             CinemachineVirtualCamera cam;
             if ((cam = GetCamera(id)) == null) return;
@@ -113,6 +113,10 @@ namespace BUT.Utils.CineCameraManager
             if (_currentCam != null) _currentCam.Priority = 1;
             cam.Priority = 10;
             _currentCam = cam;
+
+            if (p_onCameraReached != null)
+                StartCoroutine(CallbackCameraReached(id, p_onCameraReached));
+
             if (Application.isPlaying || _isCineMachineBrainNull) return;
             _brain.enabled = false;
             _brain.enabled = true;
@@ -129,6 +133,11 @@ namespace BUT.Utils.CineCameraManager
         public CinemachineVirtualCamera GetCamera(int id)
         {
             return _cameras.ContainsKey(id) ? _cameras[id] : null;
+        }
+
+        public int GetMaxCamera()
+        {
+            return _cameras.Count;
         }
         
         #endregion
